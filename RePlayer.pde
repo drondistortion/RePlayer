@@ -1,3 +1,24 @@
+/*
+ *  RePlayer, simple player of .mp3 files for rehearsal purposes.
+ *  Hitting space bar starts playback, hitting space bar again stops
+ *  playback and rewinds.
+
+ *  Copyright (C) 2022 Dron Distortion
+
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import ddf.minim.*;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -5,50 +26,58 @@ import java.io.FilenameFilter;
 //String FILESPATH = "~/Desktop/";
 int rectColor;
 class mySq {
-    public int x;
-    public int y;
-    public int size;
-    public boolean rectOver;
-    public boolean isPressed;
-    public int countDown;
-    public boolean isReleased;
-    public String btnText;
+        public int x;
+        public int y;
+        public int size;
+        public boolean rectOver;
+        public boolean isPressed;
+        public int countDown;
+        public boolean isReleased;
+        public String btnText;
 
-    public mySq(int x, int y, int size, boolean rectOver, boolean isPressed, int countDown, boolean isReleased, String btnText) {
-        this.x = x;
-        this.y = y;
-        this.size = size;
-        this.rectOver = rectOver;
-        this.isPressed = isPressed;
-        this.countDown = countDown;
-        this.isReleased = isReleased;
-        this.btnText = btnText;
-    }
- }
+        public mySq(
+                        int x,
+                        int y,
+                        int size,
+                        boolean rectOver,
+                        boolean isPressed,
+                        int countDown,
+                        boolean isReleased,
+                        String btnText) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.rectOver = rectOver;
+                this.isPressed = isPressed;
+                this.countDown = countDown;
+                this.isReleased = isReleased;
+                this.btnText = btnText;
+        }
+}
 
 
 // list files
 String[] listFiles(String dir)
-  {
-    java.io.File file = new java.io.File(dir);
-    if(file.isDirectory())
-    {
-      FilenameFilter filter = new FilenameFilter() {
-            @Override
-            public boolean accept(File pathname, String name) {
-              return name.endsWith(".mp3");
-            }
-      };
+{
+        java.io.File file = new java.io.File(dir);
+        if(file.isDirectory())
+        {
+                FilenameFilter filter = new FilenameFilter() {
+                        @Override
+                        public boolean accept(File pathname, String name) {
+                                return name.endsWith(".mp3");
+                        }
+                };
 
-      String[] files = file.list(filter);
+                String[] files = file.list(filter);
 
-      return files;
-    }
-    else
-    {
-      return null;
-    }
-  }
+                return files;
+        }
+        else
+        {
+                return null;
+        }
+}
 
 boolean overRect(int x, int y, int width, int height)
 {
@@ -61,7 +90,8 @@ boolean overRect(int x, int y, int width, int height)
     }
 }
 
-void update() {
+void update()
+{
     for (int i = 0; i < filenames.length; i++){
         if (play != null) {
             boolean isPlaying = play.isPlaying();
@@ -70,7 +100,6 @@ void update() {
             }
             else if (!start && isPlaying) {
                 stop();
-                //play = null;
             }
         }
 
@@ -105,7 +134,8 @@ void setup()
     colorMode(HSB, 160, 100, 100);
 
     String path = sketchPath();
-    //String path = FILESPATH;
+    print("Music path:");
+    println(path);
     filenames = listFiles(path);
     minim = new Minim(this);
     for (String i:filenames) {
@@ -143,13 +173,12 @@ void mousePressed()
         start = false;
     }
 }
+
 void mouseReleased()
 {
     for (int i = 0; i < filenames.length; i++) {
         if (list.get(i).rectOver) {
             list.get(i).isPressed = !list.get(i).isPressed;
-            //start = false;
-            //stop();
             play = minim.loadFile(filenames[i], 2048);
         }
     }
@@ -181,6 +210,5 @@ void keyPressed()
 {
     if (key == ' ') {
         start = !start;
-        //stop();
     }
 }
