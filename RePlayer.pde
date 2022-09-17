@@ -23,7 +23,7 @@ import ddf.minim.*;
 import java.io.File;
 import java.io.FilenameFilter;
 
-//String FILESPATH = "~/Desktop/";
+String FOLDER = "/Music";
 int rectColor;
 class mySq {
         public int x;
@@ -134,7 +134,8 @@ void setup()
     colorMode(HSB, 160, 100, 100);
 
     String path = sketchPath();
-    print("Music path:");
+    path += FOLDER;
+    print("Music path: ");
     println(path);
     filenames = listFiles(path);
     minim = new Minim(this);
