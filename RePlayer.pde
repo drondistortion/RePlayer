@@ -23,7 +23,7 @@ import ddf.minim.*;
 import java.io.File;
 import java.io.FilenameFilter;
 
-String FOLDER = "/Music";
+//String FOLDER = "/Music";
 int rectColor;
 class mySq {
         public int x;
@@ -60,7 +60,7 @@ class mySq {
 String[] listFiles(String dir)
 {
         java.io.File file = new java.io.File(dir);
-        if(file.isDirectory())
+        if (file.isDirectory())
         {
                 FilenameFilter filter = new FilenameFilter() {
                         @Override
@@ -125,7 +125,8 @@ PFont f;
 
 void setup()
 {
-    fullScreen();
+    size(800, 600);
+    //fullScreen();
     background(0);
     //size(640, 480);
     f = createFont("Monospaced.plain", 24);
@@ -134,7 +135,7 @@ void setup()
     colorMode(HSB, 160, 100, 100);
 
     String path = sketchPath();
-    path += FOLDER;
+    //path += FOLDER;
     print("Music path: ");
     println(path);
     filenames = listFiles(path);
