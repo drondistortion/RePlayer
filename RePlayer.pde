@@ -90,8 +90,12 @@ boolean overRect(int x, int y, int width, int height)
     }
 }
 
+int lastY = 0;
 void update()
 {
+    if (gPressed) {
+      gPositionY = gPositionY + (gLastMouseY - mouseY)/1000;
+    }
     for (int i = 0; i < filenames.length; i++){
         if (play != null) {
             boolean isPlaying = play.isPlaying();
@@ -103,6 +107,11 @@ void update()
             }
         }
 
+        /*list.get(i).y -= gScroll*5;*/
+        if (lastY != gPositionY) {
+          list.get(i).y -= gPositionY;
+        }
+
         if (overRect(list.get(i).x, list.get(i).y, width, list.get(i).size) ) {
             list.get(i).rectOver = true;
         }
@@ -111,6 +120,8 @@ void update()
             list.get(i).rectOver = false;
         }
     }
+    lastY = gPositionY;
+    gScroll = 0;
 }
 
 Minim minim;
@@ -118,7 +129,7 @@ AudioPlayer play;
 ArrayList<mySq> list = new ArrayList<mySq>();
 String[] filenames;
 int rectX = 0;
-int rectSize = 30;
+final int rectSize = 30;
 int tab = 8;
 boolean start = false;
 PFont f;
@@ -128,7 +139,6 @@ void setup()
     size(800, 600);
     //fullScreen();
     background(0);
-    //size(640, 480);
     f = createFont("Monospaced.plain", 24);
     int rectY = -rectSize;
     rectColor = 0;
@@ -145,14 +155,62 @@ void setup()
     }
 }
 
+int scrollWidth = 0;
+
+boolean checkScroll(int y)
+{
+  if (y > height)
+    return true;
+  else
+    return false;
+}
+
+int gScroll = height;
+int gPositionY;
+int gScrollH;
+
+void lockScrollPosition()
+{
+    if (gPositionY + gScrollH > height) {
+	gPositionY = height - gScrollH;
+    }
+
+    if (gPositionY < 0) {
+	gPositionY = 0;
+    }
+}
+
+void showScroll()
+{
+    scrollWidth = 10;
+    int maxItems = height / rectSize;
+    gScrollH = list.size() * rectSize;
+    for (int i = 0; i < list.size() - maxItems; i++) {
+	gScrollH -= rectSize;
+    }
+    /*
+    if (gScrollH > height) {
+        gScrollH = height - rectSize;
+    }
+    */
+    fill(0, 255, 255, 50);
+    lockScrollPosition();
+    rect(width-scrollWidth, gPositionY, scrollWidth, gScrollH);
+}
+
 void draw()
 {
+    background(0);
     update();
+
+    boolean scroll_flag = false;
     for (int i = 0; i < filenames.length; i++) {
-        rectColor = i*10;
-        fill(rectColor, 60, 70);
+        rectColor = i*10%160;
+        fill(rectColor, 40, 70);
         stroke(255);
-        rect(list.get(i).x, list.get(i).y, width, list.get(i).size);
+        int y = list.get(i).y;
+        rect(list.get(i).x, y, width, list.get(i).size);
+        scroll_flag = checkScroll(y);
         stroke(0);
         if (list.get(i).isPressed)  {
             fill(160-i*10,30,70);
@@ -166,24 +224,43 @@ void draw()
         textFont(f);
         text(filenames[i], tab, list.get(i).y+rectSize/2+10);
     }
+    if (scroll_flag) {
+        showScroll();
+    }
+    /*
+       if (gPressed) {
+       gPositionY += (gLast
+       }
+     */
 }
+
+int gLastMouseY = 0;
+boolean gPressed = false;
 
 void mousePressed()
 {
-    for (int i = 0; i < filenames.length; i++) {
-        list.get(i).isPressed = false;
-        start = false;
-    }
+  gPressed = true;
+  gLastMouseY = mouseY;
 }
 
 void mouseReleased()
 {
+    gPressed = false;
+    gLastMouseY = mouseY;
     for (int i = 0; i < filenames.length; i++) {
+        list.get(i).isPressed = false;
+        start = false;
         if (list.get(i).rectOver) {
             list.get(i).isPressed = !list.get(i).isPressed;
             play = minim.loadFile(filenames[i], 2048);
         }
     }
+}
+
+void mouseWheel(MouseEvent event) {
+  float e = event.getCount();
+  gScroll = int(e);
+  gPositionY += int(e);
 }
 
 void stop()
